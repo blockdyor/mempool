@@ -50,13 +50,13 @@ Or use the widget script:
 
 The script follows Ghost's `theme-dark` class and retains a compact logo/backlink. Optional `data-theme="light"`, `"dark"` or `"auto"` pins a theme. Direct iframes follow the operating-system theme unless the URL specifies `theme=light` or `theme=dark`. The standalone theme button cycles auto/dark/light.
 
-`data-width` and `data-height` accept positive integer pixels (optionally `px`) or integer percentages up to `100%`; defaults are 320×140. Custom sizes such as 480×200 fit too. Very small frames may not fit all information. No Ghost theme changes or installation in the Worker are required.
+`data-width` and `data-height` accept positive integer pixels (optionally `px`) or integer percentages up to `100%`; defaults are 320×140. Compact embeds omit secondary per-block fee/transaction labels to keep graphics and the four fee recommendations readable. Custom sizes such as 480×200 fit too. Very small frames may not fit all information. No Ghost theme changes or installation in the Worker are required.
 
 ## Data and caching
 
 All upstream requests are server-side to fixed [mempool.space API](https://mempool.space/docs/api/rest) endpoints: `/api/v1/blocks`, `/api/v1/fees/mempool-blocks`, `/api/v1/fees/recommended` and `/api/mempool`.
 
-The card shows one projected block, two latest mined blocks, four fee recommendations and total waiting virtual size. Block links open details on mempool.space. Recommendations are estimates, not guaranteed confirmation deadlines. Public/keyless access remains subject to the provider's [terms](https://mempool.space/terms-of-service); this is not a guarantee about licensing, availability or cost.
+The card shows one projected block, two latest mined blocks, four fee recommendations and total waiting virtual size. Block graphics are noninteractive; the standalone footer has only the blockdyor backlink and right-aligned Source link, matching Price. Recommendations are estimates, not guaranteed confirmation deadlines. Public/keyless access remains subject to the provider's [terms](https://mempool.space/terms-of-service); this is not a guarantee about licensing, availability or cost.
 
 The browser checks every 30 seconds while visible; provider publication cadence is separate. Worker Cache API entries are fresh for 30 seconds, with failure fallback up to 10 minutes. The one UTC caption is aggregate retrieval/capture time, **not** provider publication time: these endpoints do not supply a shared publication timestamp. `Cached ·` retains the original capture time. Failed refresh with no usable data displays `Temporarily unavailable`. Cache entries are per-data-center and may be evicted.
 

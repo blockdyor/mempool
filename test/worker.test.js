@@ -18,6 +18,12 @@ test('cache failures do not discard successful upstream data',async()=>{upstream
 test('HEAD is bodyless and unknown paths or unsupported methods are rejected',async()=>{upstream();assert.equal(await(await call('/','HEAD')).text(),'');assert.equal((await call('/missing')).status,404);assert.equal((await call('/','POST')).status,405);});
 test('theme input is allowlisted and embed keeps compact brand',async()=>{upstream();let h=await(await call('/?theme=%22%3E%3Cscript%3E&embed=1')).text();assert.match(h,/data-theme="auto"/);assert.match(h,/data-embed="1"/);assert.match(h,/alt="blockdyor"/);assert.doesNotMatch(h,/<script>/);h=await(await call('/?theme=dark')).text();assert.match(h,/data-theme="dark"/);});
 test('widget defaults match Price',async()=>{const h=await(await call('/widget.js')).text();assert.match(h,/320px/);assert.match(h,/140px/);assert.match(h,/Bitcoin mempool/);});
+test('blocks do not navigate away and footer keeps only home and rightmost Source',async()=>{
+  upstream();const h=await(await call()).text();
+  assert.match(h,/<div class="block projected"/);assert.doesNotMatch(h,/<a[^>]+href="https:\/\/mempool.space/);
+  const footer=h.match(/<footer[^>]*>(.*?)<\/footer>/s)[1];
+  assert.equal([...footer.matchAll(/<a\b/g)].length,2);assert.match(footer,/>Source<\/a>$/);
+});
 test('Git deployment targets mempool and preserves dashboard-managed domains',async()=>{
   const config=readFileSync(new URL('../wrangler.toml',import.meta.url),'utf8');
   assert.match(config,/^name = "mempool"$/m);assert.match(config,/^main = "src\/index.js"$/m);
