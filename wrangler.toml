@@ -1,0 +1,8 @@
+# One runtime file; production domain is configured in the Cloudflare dashboard.
+name = "mempool"
+main = "src/index.js"
+compatibility_date = "2026-11-17"
+
+# Preserve dashboard-managed variables and custom-domain routes, as in Price.
+keep_vars = true
+workers_dev = false

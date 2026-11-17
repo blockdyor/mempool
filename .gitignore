@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.wrangler/
+.DS_Store
+*.zip
+capture.json
+preview.html
+*-verification.json
+note-sync-verification.json
+final-note-sync-verification.json
+docs/superpowers/
