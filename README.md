@@ -2,7 +2,7 @@
 
 A minimal Bitcoin mempool card for a Cloudflare Worker. One self-contained JavaScript runtime file, inline SVG, no framework, build step, runtime dependencies, cookies or trackers.
 
-A sibling to [Price](https://github.com/blockdyor/price): the same blockdyor logo, system font, light/dark palette, 420px layout and 230px card. Original layered block graphics reference [rbitcoin.space](https://rbitcoin.space/); no upstream Rust, frontend code or assets are copied.
+A sibling to [Price](https://github.com/blockdyor/price): the same blockdyor logo, system font, light/dark palette, 420px layout and 230px card. Rectangular timeline graphics follow [rbitcoin.space](https://rbitcoin.space/). Its fee palette, thresholds and size-weighted strata algorithm are adapted with the full MIT notice retained in the Worker; no Rust, Solid framework or external assets are loaded.
 
 **Deployment target:** https://mempool.blockdyor.com. The repository is ready for Cloudflare Workers Builds; publishing it on GitHub does not connect or deploy a Cloudflare Worker.
 
@@ -56,11 +56,13 @@ The script follows Ghost's `theme-dark` class and retains a compact logo/backlin
 
 All upstream requests are server-side to fixed [mempool.space API](https://mempool.space/docs/api/rest) endpoints: `/api/v1/blocks`, `/api/v1/fees/mempool-blocks`, `/api/v1/fees/recommended` and `/api/mempool`.
 
-The card shows one projected block, two latest mined blocks, four fee recommendations and total waiting virtual size. Block graphics are noninteractive; the standalone footer has only the blockdyor backlink and right-aligned Source link, matching Price. Recommendations are estimates, not guaranteed confirmation deadlines. Public/keyless access remains subject to the provider's [terms](https://mempool.space/terms-of-service); this is not a guarantee about licensing, availability or cost.
+The 230px card shows one projected block, up to six recent mined blocks in a horizontally scrollable timeline, four fee recommendations and waiting virtual size. Hover or focus a block for a transient in-card tooltip; tap/click to pin it, then close with × or Escape. Arrow keys, Home/End and the small scroll controls navigate the timeline. Fee buttons show a clearly labelled 140 vB example, not a claim about your actual transaction. There is no persistent block-inspection panel, histogram legend or calculator form. All inspection stays in the card; the footer has only the blockdyor backlink and right-aligned Source link. Recommendations are estimates, not guaranteed confirmation deadlines. Public/keyless access remains subject to the provider's [terms](https://mempool.space/terms-of-service); this is not a guarantee about licensing, availability or cost.
 
 The browser checks every 30 seconds while visible; provider publication cadence is separate. Worker Cache API entries are fresh for 30 seconds, with failure fallback up to 10 minutes. The one UTC caption is aggregate retrieval/capture time, **not** provider publication time: these endpoints do not supply a shared publication timestamp. `Cached ·` retains the original capture time. Failed refresh with no usable data displays `Temporarily unavailable`. Cache entries are per-data-center and may be evicted.
 
-Bands visualize sampled fee-range levels from blue to purple; filled height is virtual size relative to 1 million vB, capped at full. They are not individual transaction rectangles or exact percentile histograms.
+The twelve fee colors use the reference's thresholds (0.12, 0.15, 0.2, 0.3, 0.5, 1, 1.5, 2, 3, 5 and 10 sat/vB). Layer thickness is weighted by virtual size, with a minimum visible thickness when space permits; total fill still follows virtual size relative to 1 million vB. These are fee bands, not individual transaction rectangles. Projected layers estimate the next block from the captured mempool fee histogram; package selection can differ from the actual next mined block.
+
+To keep initial rendering fast, SSR never waits for transaction summaries. The client asynchronously asks this same Worker for `/api/block-bands?id=HASH` for the two newest mined blocks, and for older blocks when inspected. The Worker validates the 64-character hexadecimal hash, reads `/api/v1/block/HASH/summary`, excludes the coinbase, and aggregates effective fee rates into 12 virtual-size buckets. Only that small aggregate is sent to the browser and cached for 24 hours by immutable block hash. The large transaction list is never sent to the browser. Until genuine layers arrive, a single median-fee-colored capacity fill is shown rather than a fabricated distribution. Summary failure never hides the usable card.
 
 ## Local development
 
@@ -71,7 +73,7 @@ npm test
 npm run dev
 ```
 
-Open `http://127.0.0.1:8788`. The development server binds loopback only; restart it after editing the Worker. This plain Node server does not emulate Cloudflare Cache API. Tests exercise the Worker and generated client script, including API validation, error states, cache expiry, theme/visibility handling and the Git deployment configuration.
+Open `http://127.0.0.1:8788`. The development server binds loopback only; restart it after editing the Worker. This plain Node server does not emulate Cloudflare Cache API. Tests exercise the Worker and generated client script, including API/summary validation, cache expiry, pin/Escape/fee selection, theme/visibility handling and Git deployment configuration. The browser expression in `test/layout-check.js` verifies the 230px card, internal element containment, no overlapping labels, rectangular proportions and compact embeds.
 
 ## Privacy and license
 
